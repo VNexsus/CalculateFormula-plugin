@@ -1,0 +1,22 @@
+{
+  "name": "Вычислить формулу",
+  "guid": "asc.{1D8DFC20-FD2B-A700-961C-34187CF0E194}",
+  "version": "1.2",
+  "variations": [
+    {
+      "description": "Вычисление формул в табличном редакторе",
+      "url": "index.html",
+      "icons": [
+        "resources/img/icon.png",
+        "resources/img/icon@2x.png"
+      ],
+      "isViewer": false,
+      "EditorsSupport": ["cell"],
+      "isVisual": true,
+      "isModal": false,
+      "isDisplayedInViewer": true,
+      "isSystem": false,
+	  "size": [ 602, 250 ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+<!--
+ (c) Copyright VNexus 2025
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ -->
+ 
+ <!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="UTF-8" />
+	  <title>Вычислить формулу</title>
+	  <script type="text/javascript" src="../v1/plugins.js"></script>
+	  <script type="text/javascript" src="../v1/plugins-ui.js"></script>
+	  <link rel="stylesheet" href="resources/css/plugins.css" />
+	  <link rel="stylesheet" href="resources/css/app.css" />
+	  <link rel="stylesheet" href="resources/css/custom.css" />
+	  <script type="text/javascript" src="scripts/code.js"></script>
+	  <script type="text/javascript" src="scripts/model.js"></script>
+	</head>
+	<body>
+	  <div class="wrap">
+		<div class="processor">
+			<div class="workspace">
+				<div id="processed"></div>
+			</div>
+			<div class="note"></div>
+			<div class="toolbar">
+				<button class="btn dlg-btn normal" id="calculate">Вычислить</button>
+				<button class="btn dlg-btn normal" id="restart" style="display: none;">Заново</button>
+				<button disabled class="btn-text-default" id="stepIn">Шаг с заходом</button>
+				<button disabled class="btn-text-default" id="stepOut">Шаг с выходом</button>
+				<button class="btn dlg-btn normal" id="close">Закрыть</button>
+			</div>
+		</div>
+	  </div>
+	</body>
+</html>

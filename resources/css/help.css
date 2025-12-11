@@ -1,0 +1,57 @@
+.asc-window.modal.helpdialog {
+	z-index: 1060!important;
+}
+
+.asc-window.modal.helpdialog .body {
+	padding: 10px 5px 10px 15px;
+}
+
+.asc-window.modal.helpdialog .body h1 {
+    font-size: 16px;
+	font-weight: bold;
+	margin: 0 0 10px 0;
+}
+
+.asc-window.modal.helpdialog .info-box .text {
+	user-select: text;
+    cursor: auto;
+}
+
+.asc-window.modal.helpdialog .info-box .text ::selection {
+	background: var(--highlight-text-select);
+	color: var(--background-normal);
+}	
+
+.asc-window.modal.helpdialog .info-box .text {
+    font-size: 12px;
+}
+
+.asc-window.modal.helpdialog .info-box .text b > em {
+    color: var(--background-accent-button);
+    letter-spacing: 1px;
+    font-family: monospace;
+    font-size: 120%;
+    font-style: normal;
+}
+
+.asc-window.modal.helpdialog .info-box .text ol li {
+	margin: 0 0 5px 0;
+}
+
+
+.asc-window.modal.helpdialog .info-box .text table {
+	margin: 10px 0;
+}
+
+.asc-window.modal.helpdialog .info-box .text td {
+    padding: 5px;
+    border: 1px solid var(--border-divider);
+}
+
+.asc-window.modal.helpdialog .info-box .text table tr:first-of-type td {
+	background-color: var(--background-toolbar);
+}
+
+.asc-window.modal.helpdialog .info-box .text table tr td:first-of-type {
+	text-align: center;
+}

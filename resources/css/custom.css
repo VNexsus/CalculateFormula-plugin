@@ -1,0 +1,342 @@
+* {
+	user-select: none;	
+}
+
+html {
+	height: 100%
+}
+
+body {
+	height: 100%;
+    margin: 0;
+    padding: 10px;
+}
+
+.btn-text-default {
+	width: auto!important;
+}
+
+.wrap {
+	overflow: auto;
+    height: 100%;
+	padding: 0;
+}
+
+#result {
+	font-family: var(--font-family-base-custom,Arial,Helvetica,"Helvetica Neue",sans-serif), Arial, Helvetica, "Helvetica Neue", sans-serif;	
+	font-size: 14px;
+	padding: 5px;
+}
+
+
+/* processor defines */
+
+.processor {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.processor .workspace {
+	overflow: auto;
+	flex: 1 0;
+}
+
+.processor .note {
+	border-top: 1px solid var(--border-divider);
+	padding: 5px 10px 0;
+	margin-top: 10px;
+	min-height: 40px;
+}
+
+.processor .toolbar {
+    display: flex;
+	flex: 0 0 30px;
+	align-items: center;
+	padding-right: 5px;
+	padding-left: calc(25% + 20px);
+	box-shadow: none!important;
+}
+
+.processor .toolbar button {
+	margin-right: 18px
+}
+
+.processor .toolbar button:last-child {
+	margin-right: 0;
+}
+
+#processed {
+	display: table;
+	table-layout: fixed;
+	border-spacing: 5px;
+	width: 100%;
+}
+
+.output {
+	font-size: 12px;
+	display: table-row;
+}
+
+.output .equal {
+	display: table-cell;
+	width: 10px;
+	text-align: center;
+}
+
+.output .formula {
+	font-size: 12.4px;
+	display: table-cell;
+	width: 75%;
+	padding: 5px;
+	color: var(--text-normal);
+    background: var(--background-normal);
+    border: 1px solid var(--border-regular-control);
+	border-radius: 3px;
+	text-shadow: 0 0 0.3px var(--background-scrim);
+}
+
+.output:last-child .formula {
+	border: 1px solid rgba(72,121,92,1);
+	box-shadow: 0 0 3px 0 rgba(72,121,92,0.5);
+}
+
+.output:not(:last-child) .formula *:not(.next) > * {
+    color: var(--text-normal)!important;
+}
+
+.output:not(:last-child) .formula .next {
+	text-decoration-style: dashed;
+    text-decoration-color: var(--text-normal);
+}
+
+
+/* Стили для отображения адреса ячейки */
+.output .address {
+	display: table-cell;
+	width: 25%;
+    font-size: 11px;
+    color: var(--text-normal);
+    padding: 8px 0 8px 8px;
+	position: relative;
+}
+
+.output .address .container {
+	display: inline-flex;
+    width: auto;
+    max-width: 100%;
+}
+
+.output .address .container .sheet {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex: auto;
+}
+
+.output .address .container .div {
+	flex: 1 0;
+}
+
+.output .address .container .ref {
+	font-weight: 700;
+    padding: 0 0 0 2px;
+	flex: 1 0;
+}
+
+.output:last-child .address .container .ref {
+	color: rgba(72,121,92,1);
+}
+
+.formula * {
+	position: relative;
+}
+
+/* Стили для узлов дерева */
+.formula .default {
+    font-style: italic;
+    font-weight: 600;
+}
+
+.formula .number {}
+
+.formula .string {
+	color: var(--text-secondary);
+}
+
+.formula .boolean {
+	color: var(--highlight-text-select);
+}
+
+.formula .cell {}
+
+/* Стили для выражений */
+.formula .expression {
+	margin: 0;
+	display: inline;
+	line-height: initial;
+	line-break: anywhere;
+	transition: all 0.2s;
+}
+
+.formula .unary-operator {
+	color: #666666;
+}
+
+
+.formula .binary-operator {}
+.formula .binary-operator:before,
+.formula .binary-operator:after {
+	content: ' ';
+	font-size: 2px;
+	letter-spacing: 2px
+}
+
+
+/* Самое приоритетное выражение */
+.formula .next {
+    text-decoration: underline;
+	text-underline-offset: 3px;
+	text-decoration-color: #f00000;
+	text-decoration-thickness: from-font;
+}
+
+/* Последнее вычисленное значение */
+.formula .last {
+    font-style: italic;
+    font-weight: 600;
+}
+
+/* Скобки */
+.formula .paren {
+    font-weight: bold;
+}
+
+.formula .paren-open {}
+.formula .paren-open:after {
+	content: ' ';
+	font-size: 2px;
+	letter-spacing: 2px
+}
+
+.formula .paren-close {}
+.formula .paren-close:before {
+	content: ' ';
+	font-size: 2px;
+	letter-spacing: 2px
+}
+
+/* Функции и аргументы*/
+.formula .function-name {
+	cursor: help;
+	white-space: nowrap;
+}
+
+.formula .function-arg {
+}
+
+/* Разделитель аргументов ; */
+.formula .arg-separator {
+	font-weight: 700;
+}
+.formula .arg-separator:before,
+.formula .arg-separator:after {
+	content: ' ';
+	font-size: 2px;
+	letter-spacing: 2px
+}
+
+/* Выделение вычислений */
+.formula .expression.hover {
+	/*background: rgba(160,240,160,0.4);*/
+}
+
+.formula .expression.function-call.hover * {
+	color: var(--text-tertiary)!important;
+}
+
+.formula .expression.function-call.hover > .function-name,
+.formula .expression.function-call.hover > .paren-open,
+.formula .expression.function-call.hover > .paren-close,
+.formula .expression.function-call.hover > .arg-separator {
+	color: #f00000!important;
+}
+
+.formula .expression.parenthesis.hover * {
+	color: var(--text-tertiary)!important;
+}
+
+.formula .expression.parenthesis.hover > .paren-open,
+.formula .expression.parenthesis.hover > .paren-close {
+	color: #f00000!important;
+}
+
+
+/* Стрелки */
+.link {
+	position: absolute;
+	left: 0px;
+	top: 14px;
+	height: calc(100% + 5px);
+	width: 1px;
+	border-color: inherit;
+	z-index: 5;
+	animation: intro 0.3s both;
+}
+
+.link .line {
+	display: inline-block;
+	position: absolute;
+	bottom: 0;
+	height: 100%;
+	width: 1px;
+	border-style: solid;
+	border-right-width: 1px;
+	border-left-width: 0;
+	border-color: inherit;
+	background-color: inherit;
+}
+
+.link .line:before {
+	content: '';
+	display: inline-block;
+	position: absolute;
+	top: -5px;
+	left: -2px;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	border-style: solid;
+	border-width: 2px;
+	border-color: inherit;
+	background-color: inherit;
+}
+
+.output:nth-last-child(2) .link .line:after {
+	content: '';
+	display: inline-block;
+	position: absolute;
+	bottom: -7px;
+	left: -2px;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	border-style: solid;
+	border-width: 1px;
+	border-color: inherit;
+}
+
+.output:has(~ * .formula > .default) .link .line:after,
+.output:has(~ * .formula > .last) .link .line:after {
+	background-color: inherit;
+}
+
+@keyframes intro {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
