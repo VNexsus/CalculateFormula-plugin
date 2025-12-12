@@ -459,7 +459,7 @@ class BinaryOperationNode extends ASTNode {
         try {
 			const leftToken  = getTokenFromNode(this.left);
 			const rightToken = getTokenFromNode(this.right);
-			var result = this.operator.Calculate([leftToken, rightToken]);
+			var result = this.operator.Calculate([leftToken, rightToken], this.options.cell.range.bbox, null, this.options.cell.Worksheet.worksheet, true);
             let resultNode;
 
             switch (result.type) {
@@ -754,6 +754,15 @@ class FunctionCallNode extends ASTNode {
 		let result;
 		if (['INDIRECT','SHEET','SHEETS'].indexOf(this.token.name) >= 0)
 			result = this.token.Calculate(args, null, null, this.options.cell.Worksheet.worksheet);
+		else if(['IF'].indexOf(this.token.name) >= 0)
+			if(this.token.bArrayFormula) {
+				var f = this.token.Assemble2(args, 0, args.length);
+				var formulaParser = new this.options.formulaParser(f.value, undefined, this.options.cell.Worksheet.worksheet);
+				formulaParser.parse(false, false, null, true);
+				result = this.token.checkFormulaArray(args, this.options.cell.range.bbox, null, formulaParser, null, args.length);
+			}
+			else
+				result = this.token.Calculate(args, this.options.cell.range.bbox);
 		else
 			result = this.token.Calculate(args);
 

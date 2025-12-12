@@ -46,6 +46,7 @@
 			cFormulaFunctionToLocale: 	parent.AscCommonExcel.cFormulaFunctionToLocale || {},
 			formulaRangeBorderColor: 	parent.AscCommonExcel.c_oAscFormulaRangeBorderColor || [{ r: 0, g: 0, b: 0, a: 1 }],
 			CellFormat: 				parent.AscCommon.CellFormat,
+			formulaParser: 				parent.AscCommonExcel.parserFormula,
 			callback: 					window.command,
 			ErrorToLocale:				function(value){ 
 											var key = Object.keys(parent.AscCommon.cErrorOrigin).find(key => { return parent.AscCommon.cErrorOrigin[key] === value });
