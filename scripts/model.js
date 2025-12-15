@@ -312,6 +312,40 @@ class CellRangeNode extends ASTNode {
         this.el.style.color = this.color;
         return this.el;
     }
+	
+	calculate() {
+		var el = document.getElementById('node-' + this.id);
+
+		var resultNode = new ArrayNode(this.token.getFullArray(), this.options)
+
+		if (this.parent) {
+			resultNode.parent = this.parent;
+			switch (this.parent.type) {
+				case NodeType.BINARY_OPERATION:
+					if (this.parent.left == this) this.parent.left = resultNode;
+					if (this.parent.right == this) this.parent.right = resultNode;
+					break;
+				case NodeType.PARENTHESIS:
+					this.parent.expression = resultNode;
+					break;
+				case NodeType.FUNCTION_CALL:
+					const argIndex = this.parent.arguments.indexOf(this);
+					if (argIndex !== -1)
+						this.parent.arguments[argIndex] = resultNode;
+					break;
+				case NodeType.UNARY_OPERATION:
+					break;
+			}
+		}
+
+		resultNode.toHtml();
+		resultNode.el.classList.add('last');
+		el.replaceWith(resultNode.el);
+
+		if (!this.parent) {
+			return resultNode;
+		}
+	}
 }
 
 class ArrayNode extends ASTNode {
@@ -325,7 +359,45 @@ class ArrayNode extends ASTNode {
         this.el = document.createElement('span');
         this.el.setAttribute('id', 'node-' + this.id)
         this.el.classList.add('array');
-        this.el.textContent = this.token.toLocaleString(true);
+		
+		var o = document.createElement('span');
+		o.className = 'array-open';
+		o.textContent = '{';
+		this.el.appendChild(o);
+		
+		for (var y = 0; y < this.token.rowCount; y++) {
+			for (var x = 0; x < this.token.countElementInRow[y]; x++) {
+				var ae = document.createElement('span');
+				if(this.token.array[y][x].type == 0)
+					ae.textContent = this.token.array[y][x].toLocaleString(true) + '',
+					ae.className = 'number';
+				else if(this.token.array[y][x].type == 2)
+					ae.textContent = this.token.array[y][x].toLocaleString(true),
+					ae.className = 'boolean';
+				else
+					ae.textContent = '"' + this.token.array[y][x].toLocaleString(true) + '"',
+					ae.className = 'string';
+				this.el.appendChild(ae);
+				var s = document.createElement('span');
+				if(x <= this.token.countElementInRow[y] - 2) {
+					s.className = 'array-separator';
+					s.textContent = this.options.formulaSeparators.arrayColSeparator;
+					this.el.appendChild(s);
+				}
+			}
+			if(y <= this.token.rowCount - 2) {
+				s.className = 'array-separator';
+				s.textContent = this.options.formulaSeparators.arrayRowSeparator;
+				this.el.appendChild(s);
+			}
+		}			
+					
+        //this.el.textContent = this.token.toLocaleString(true);
+		var c = document.createElement('span');
+		c.className = 'array-close';
+		c.textContent = '}';
+		this.el.appendChild(c);
+
 		return this.el;
     }
 }
@@ -614,10 +686,11 @@ class UnaryOperationNode extends ASTNode {
 }
 
 class ParenthesisNode extends ASTNode {
-    constructor(expression) {
+    constructor(expression, options = {}) {
         super(NodeType.PARENTHESIS);
         this.expression = expression;
         this.expression.parent = this;
+		this.options = options; 
     }
 
     toHtml() {
@@ -649,6 +722,13 @@ class ParenthesisNode extends ASTNode {
 
         if (this.parent) {
 			this.expression.parent = this.parent;
+			
+			if(this.expression.token.type && this.expression.token.type == 5) {
+				this.expression = new ArrayNode(this.expression.token.getFullArray(), this.options);
+				this.expression.el = this.expression.toHtml();
+				this.expression.el.classList.add('last');
+			}
+				
             switch (this.parent.type) {
                 case NodeType.BINARY_OPERATION:
                     var operand = this.parent[this.parent.left == this ? 'left' : 'right'];
@@ -764,7 +844,7 @@ class FunctionCallNode extends ASTNode {
 			else
 				result = this.token.Calculate(args, this.options.cell.range.bbox);
 		else
-			result = this.token.Calculate(args);
+			result = this.token.Calculate(args, null, null, null, this.token.bArrayFormula || (args.length === 1 && args[0].type && args[0].type === 11));
 
 		if (result.type == 6 || result.type == 12)
 			result = result.getValue();
@@ -954,7 +1034,7 @@ class ASTParser {
             if (nameOrValue === '(') {
                 const expr = this.parseExpression();
                 this.expectToken(9, ')');
-                return new ParenthesisNode(expr);
+                return new ParenthesisNode(expr, this.options);
             }
 
             if (nameOrValue === 'un_minus' || nameOrValue === 'un_plus') {
@@ -1039,6 +1119,13 @@ class ASTParser {
 					this.highestPriorityNode = highestPriorityOp;
 				}
 			}
+			else if(currentNode.type === "CELLRANGE"){
+				if (level > maxLevel) {
+					maxLevel = level;
+					highestPriorityOp = currentNode;
+					this.highestPriorityNode = highestPriorityOp;
+				}
+			}
 			else if (currentNode.type === 'UNARY_OPERATION' && currentNode.operator === '%') {
 				if (level > maxLevel) {
 					maxLevel = level;
@@ -1046,9 +1133,10 @@ class ASTParser {
 					this.highestPriorityNode = highestPriorityOp;
 				}
 			}
-			else if ((currentNode.type === 'CELL' || currentNode.type === 'NAME')&&
+			else if ((currentNode.type === 'CELL' || currentNode.type === 'NAME') &&
 					(!currentNode.parent || (currentNode.parent && currentNode.parent.type != 'FUNCTION_CALL') ||
-					(currentNode.parent && (currentNode.parent.type == 'FUNCTION_CALL' && currentNode.parent.arguments.length == 1 && ['ROW','ROWS','COLUMN','FORMULATEXT'].indexOf(currentNode.parent.token.name) == -1)))) {
+					(currentNode.parent && (currentNode.parent.type == 'FUNCTION_CALL' && currentNode.parent.arguments.length == 1 && ['ROW','ROWS','COLUMN','FORMULATEXT'].indexOf(currentNode.parent.token.name) == -1)))) 
+			{
 				if (level > maxLevel) {
 					maxLevel = level;
 					highestPriorityOp = currentNode;
@@ -1126,17 +1214,17 @@ class ASTParser {
                     }
 
                     for (const arg of node.arguments) {
-                        const prev = this.lockFunctionScope;
-                        this.lockFunctionScope = node;
+                        //const prev = this.lockFunctionScope;
+                        //this.lockFunctionScope = node;
 
                         this.traverseAST(arg, level + 1, callback);
 
-                        this.lockFunctionScope = prev;
+                        //this.lockFunctionScope = prev;
 
-                        if (this.highestPriorityNode &&
-                            this.isInsideFunctionArg(this.highestPriorityNode, node)) {
-                            return;
-                        }
+                        //if (this.highestPriorityNode &&
+                        //    this.isInsideFunctionArg(this.highestPriorityNode, node)) {
+                        //    return;
+                        //}
                     }
                 }
                 break;

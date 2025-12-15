@@ -1,7 +1,7 @@
 {
   "name": "Вычислить формулу",
   "guid": "asc.{1D8DFC20-FD2B-A700-961C-34187CF0E194}",
-  "version": "1.3",
+  "version": "1.4",
   "variations": [
     {
       "description": "Вычисление формул в табличном редакторе",
